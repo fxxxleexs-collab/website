@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王祥玮 Xiangwei Wang | 青年钢琴家</title>
+    <!-- 引入古典与现代结合的字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* -------------------------------------------
+           基础变量与重置 (动态响应式字号系统)
+        ------------------------------------------- */
+        :root {
+            --bg-color: #0d0d0f;
+            --surface-color: #1a1a1d;
+            --primary-gold: #cda434;
+            --text-main: #e8e8e8;
+            --text-muted: #aaaaaa;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+
+            /* 电脑端大字号设置 */
+            --base-font-size: 18px;
+            --title-h1: 5rem;
+            --title-h2: 3rem;
+            --title-h3: 1.5rem;
+            --spacing-section: 120px 10vw;
+        }
+
+        /* 移动端/平板端字号与间距缩放 */
+        @media (max-width: 1024px) {
+            :root {
+                --base-font-size: 16px;
+                --title-h1: 4rem;
+                --title-h2: 2.5rem;
+                --title-h3: 1.3rem;
+                --spacing-section: 80px 5vw;
+            }
+        }
+        @media (max-width: 768px) {
+            :root {
+                --base-font-size: 15px;
+                --title-h1: 3rem;
+                --title-h2: 2rem;
+                --title-h3: 1.2rem;
+                --spacing-section: 60px 20px;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-size: var(--base-font-size);
+            line-height: 1.9;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; letter-spacing: 2px; }
+        p { margin-bottom: 1.2rem; text-align: justify; }
+
+        a { color: var(--primary-gold); text-decoration: none; transition: 0.3s; }
+        a:hover { color: #fff; }
+
+        /* -------------------------------------------
+           导航栏 (支持移动端汉堡菜单)
+        ------------------------------------------- */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+        header.scrolled {
+            background: rgba(13, 13, 15, 0.98);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            padding: 15px 5vw;
+        }
+        .logo { font-size: 1.8rem; color: var(--primary-gold); font-family: var(--font-serif); font-weight: 600;}
+
+        .nav-links { display: flex; gap: 40px; list-style: none; transition: 0.3s;}
+        .nav-links a { color: var(--text-main); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;}
+        .nav-links a:hover { color: var(--primary-gold); }
+
+        /* 汉堡菜单按钮 (仅移动端显示) */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+        }
+        .menu-toggle .bar { width: 30px; height: 2px; background-color: var(--primary-gold); transition: 0.3s; }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; z-index: 1001; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; height: 100vh; width: 70%;
+                background: #111; flex-direction: column; justify-content: center; align-items: center;
+                box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            }
+            .nav-links.active { right: 0; }
+            /* 汉堡动画 */
+            .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+            .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        }
+
+        /* -------------------------------------------
+           首屏 (Hero Section)
+        ------------------------------------------- */
+        .hero {
+            height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(13,13,15,1)), url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=2070') center/cover;
+        }
+        .hero h1 { font-size: var(--title-h1); color: #fff; margin-bottom: 15px; animation: fadeInDown 1.5s ease; }
+        .hero p { font-size: 1.5rem; color: var(--primary-gold); font-weight: 300; letter-spacing: 4px; animation: fadeInUp 1.5s ease 0.5s both; }
+
+        /* -------------------------------------------
+           通用区块样式
+        ------------------------------------------- */
+        section { padding: var(--spacing-section); }
+        .section-title { font-size: var(--title-h2); color: var(--primary-gold); text-align: center; margin-bottom: 70px; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 3px; background: var(--primary-gold); margin: 20px auto 0; }
+
+        /* -------------------------------------------
+           个人简介区块 (含动态轮播相册)
+        ------------------------------------------- */
+        .about-container { display: flex; gap: 60px; align-items: center; }
+        .about-text { flex: 1.5; font-size: 1.1rem; color: #d0d0d0; }
+
+        /* 动态相册组件 CSS */
+        .about-photo-wrapper {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            padding: 10px; /* 制造画框效果 */
+            background: #1a1a1d;
+        }
+        .carousel { width: 100%; position: relative; overflow: hidden; aspect-ratio: 3 / 4; border-radius: 4px;}
+        .carousel-inner { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+        .carousel-item { min-width: 100%; height: 100%; object-fit: cover; }
+
+        /* 相册控制按钮 */
+        .carousel-control {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(0,0,0,0.5); color: #fff; border: none; font-size: 1.5rem;
+            cursor: pointer; padding: 10px 15px; transition: 0.3s; z-index: 2;
+        }
+        .carousel-control:hover { background: var(--primary-gold); }
+        .carousel-control.prev { left: 0; border-radius: 0 4px 4px 0; }
+        .carousel-control.next { right: 0; border-radius: 4px 0 0 4px; }
+
+        /* 相册圆点指示器 */
+        .carousel-indicators {
+            display: flex; justify-content: center; gap: 8px;
+            position: absolute; bottom: 15px; width: 100%; z-index: 2;
+        }
+        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .dot.active { background: var(--primary-gold); transform: scale(1.3); }
+
+        @media (max-width: 900px) {
+            .about-container { flex-direction: column-reverse; } /* 手机上文字在上，图片在下 */
+            .about-photo-wrapper { width: 100%; max-width: 500px; margin: 0 auto; }
+        }
+
+        /* 技能标签 */
+        .skills { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 30px; }
+        .skill-tag {
+            background: rgba(205, 164, 52, 0.1); color: var(--primary-gold);
+            padding: 10px 20px; border: 1px solid rgba(205, 164, 52, 0.3);
+            border-radius: 30px; font-size: 1rem; letter-spacing: 1px;
+        }
+
+        /* -------------------------------------------
+           教育经历 (时间轴)
+        ------------------------------------------- */
+        .timeline { position: relative; max-width: 1000px; margin: 0 auto; }
+        .timeline::before { content: ''; position: absolute; top: 0; left: 20px; height: 100%; width: 2px; background: rgba(255,255,255,0.1); }
+        .timeline-item { margin-bottom: 60px; position: relative; padding-left: 70px; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: 14px; top: 10px; width: 14px; height: 14px;
+            border-radius: 50%; background: var(--primary-gold); box-shadow: 0 0 12px var(--primary-gold);
+        }
+        .timeline-date { color: var(--primary-gold); font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 10px; }
+        .timeline-content { background: var(--surface-color); padding: 35px; border-radius: 8px; border: 1px solid #333; }
+        .timeline-content h3 { color: #fff; font-size: var(--title-h3); margin-bottom: 15px; }
+        .timeline-content ul { padding-left: 25px; margin-top: 15px; color: var(--text-muted); font-size: 1.05rem; }
+        .timeline-content li { margin-bottom: 10px; }
+
+        /* -------------------------------------------
+           演出与教学经历 (网格)
+        ------------------------------------------- */
+        .experience-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
+        .exp-card { background: var(--surface-color); padding: 45px; border-radius: 8px; border-top: 4px solid var(--primary-gold); }
+        .exp-card h3 { color: #fff; margin-bottom: 25px; font-size: var(--title-h3); }
+        .exp-card ul { padding-left: 25px; color: var(--text-muted); font-size: 1.05rem; }
+        .exp-card li { margin-bottom: 15px; }
+
+        /* -------------------------------------------
+           荣誉奖项 (瀑布流列表)
+        ------------------------------------------- */
+        .awards-list { columns: 2; column-gap: 50px; color: var(--text-muted); font-size: 1.05rem; }
+        .award-item { margin-bottom: 20px; break-inside: avoid; background: var(--surface-color); padding: 20px; border-left: 3px solid #333; transition: 0.3s;}
+        .award-item:hover { border-left-color: var(--primary-gold); background: #222; color: #fff; transform: translateX(5px);}
+        .award-year { color: var(--primary-gold); font-weight: bold; margin-right: 15px; font-size: 1.1rem; }
+
+        @media (max-width: 768px) {
+            .awards-list { columns: 1; }
+            .timeline::before { left: 15px; }
+            .timeline-item { padding-left: 50px; }
+            .timeline-item::before { left: 9px; }
+            .timeline-content { padding: 25px 20px; }
+            .exp-card { padding: 30px 20px; }
+        }
+
+        /* -------------------------------------------
+           页脚 & 动画
+        ------------------------------------------- */
+        footer { background: #08080a; padding: 60px 20px; text-align: center; border-top: 1px solid #222; }
+        .contact-info p { margin-bottom: 15px; color: #aaa; font-size: 1.1rem;}
+        .contact-info span { color: var(--primary-gold); margin: 0 15px; }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <header id="navbar">
+        <div class="logo">X. WANG</div>
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#about">个人简介</a></li>
+            <li><a href="#education">教育经历</a></li>
+            <li><a href="#experience">演出与教学</a></li>
+            <li><a href="#awards">荣誉奖项</a></li>
+        </ul>
+    </header>
+
+    <section id="home" class="hero">
+        <h1>王 祥 玮</h1>
+        <p>青年钢琴家 | 音乐教育者 | 室内乐演奏家</p>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title reveal">Biography</h2>
+        <div class="about-container reveal">
+            <!-- 动态轮播相册组件 -->
+            <div class="about-photo-wrapper">
+                <div class="carousel" id="photoCarousel">
+                    <div class="carousel-inner" id="carouselInner">
+                        <!-- 🔥您可以在这里随意增加或删除 <img> 标签，相册会自动适应！ -->
+                        <img class="carousel-item" src="zhaopian.jpg" alt="王祥玮 照片1" onerror="this.src='https://images.unsplash.com/photo-1550005721-6b22c66cb1e8?q=80&w=600&auto=format&fit=crop'">
+                        <img class="carousel-item" src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600&auto=format&fit=crop" alt="演出照2">
+                        <img class="carousel-item" src="https://images.unsplash.com/photo-1514119412350-e174d90d280e?q=80&w=600&auto=format&fit=crop" alt="舞台照3">
+                    </div>
+                    <!-- 左右切换按钮 -->
+                    <button class="carousel-control prev" id="prevBtn">&#10094;</button>
+                    <button class="carousel-control next" id="nextBtn">&#10095;</button>
+                </div>
+                <!-- 底部圆点 (JS动态生成) -->
+                <div class="carousel-indicators" id="carouselIndicators"></div>
+            </div>
+
+            <div class="about-text">
+                <p>王祥玮，2002年生于吉林省。自幼6岁习琴，师从杨洪亮及东北师范大学音乐学院钢琴系主任娄雪玢教授，打下了坚实的古典钢琴演奏功底。他不仅在独奏领域屡获国际大奖，更兼具出色的室内乐、声乐艺术指导及爵士钢琴即兴能力。</p>
+                <p>2020年，他以优异成绩考入上海音乐学院，师从旅美钢琴家伉俪张小羽博士和著名钢琴家陈默也副教授。本科期间，他曾四次荣获上海音乐学院雅马哈亚洲奖学金，并受邀在上海交响乐团音乐厅、上音歌剧院等顶级场馆登台献演。</p>
+                <p>目前，他正就读于全球音乐学科QS排名第7的丹麦皇家音乐学院钢琴系攻读硕士学位，师从钢琴系主任、施坦威艺术家 Niklas Sivelöv 教授及捷克钢琴家 Bohumila Jedlickova 教授。其演奏足迹遍布中丹两国各大剧院与教堂，所在的钢琴三重奏 Trio Zora 亦多次入选丹麦“星期三音乐会”巡演。</p>
+                <div class="skills">
+                    <span class="skill-tag">古典钢琴独奏</span>
+                    <span class="skill-tag">室内乐合奏</span>
+                    <span class="skill-tag">声乐艺术指导</span>
+                    <span class="skill-tag">爵士钢琴即兴</span>
+                    <span class="skill-tag">视唱练耳/乐理/和声</span>
+                    <span class="skill-tag">钢琴教学法</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="education" style="background-color: var(--surface-color);">
+        <h2 class="section-title reveal">Education Background</h2>
+        <div class="timeline">
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2024.08 - 至今</div>
+                <div class="timeline-content">
+                    <h3>丹麦皇家音乐学院 (QS全球第7) | 钢琴系硕士研究生</h3>
+                    <ul>
+                        <li><strong>专业导师：</strong>师从钢琴系主任、施坦威艺术家 Niklas Sivelöv 教授及捷克钢琴家 Bohumila Jedlickova 教授。</li>
+                        <li><strong>室内乐与伴奏：</strong>随 Christian Westergaard 学习声乐艺术指导；随 Rikke Sandberg 等学习室内乐。</li>
+                        <li><strong>教学法：</strong>随教育家 Solveig Nieslen 学习钢琴教学法，顺利通过两次大型结业考试。</li>
+                        <li><strong>国际大师班：</strong>曾受 Emanuel Krasovsky (特拉维夫大学)、Niklas Pokki (西贝柳斯音乐学院)、Klaus Hellwig (柏林艺术大学) 等顶级名家指导。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2020.10 - 2024.06</div>
+                <div class="timeline-content">
+                    <h3>上海音乐学院 | 音乐教育系（钢琴方向）学士</h3>
+                    <ul>
+                        <li><strong>专业导师：</strong>师从旅美钢琴家伉俪张小羽博士、著名钢琴家陈默也副教授。声乐师从徐思宁；双钢琴师从杨传奇博士。</li>
+                        <li><strong>突出荣誉：</strong>本科期间四次荣获上海音乐学院雅马哈亚洲奖学金（涵盖独奏与即兴双料第一）。</li>
+                        <li><strong>艺考表现：</strong>同年以广东省外第3名录取星海音乐学院，全国第4名录取哈尔滨音乐学院。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2017 - 2020</div>
+                <div class="timeline-content">
+                    <h3>中央音乐学院鼓浪屿钢琴学校 | 音乐教育专业（高中）</h3>
+                    <ul>
+                        <li><strong>专业导师：</strong>先后师从尤洋副教授、武静、叶凯霖。</li>
+                        <li><strong>大师班指导：</strong>曾获 Jeffrey Cohen (曼哈顿音乐学院)、吴迎、杨韵琳、唐哲等名家指导。</li>
+                        <li><strong>早期实践：</strong>校合唱团成员登台闽南大剧院；爵士钢琴社团创社成员。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience">
+        <h2 class="section-title reveal">Performance & Teaching</h2>
+        <div class="experience-grid">
+            <div class="exp-card reveal">
+                <h3>舞台足迹 (Performances)</h3>
+                <ul>
+                    <li><strong>欧洲巡演：</strong>钢琴三重奏 Trio Zora 多次入选丹麦“星期三音乐会”，在各大教堂巡演。</li>
+                    <li><strong>个人独奏会：</strong>2023.09 于上海长江钢琴艺术家中心成功举办“答卷与启航”个人独奏音乐会。</li>
+                    <li><strong>跨界融合：</strong>2023.06 于贺绿汀音乐厅演出自编钢琴五重奏爵士作品《Fly me to the moon》并融合魔术。</li>
+                    <li><strong>官方献演：</strong>两度登台为上音师生及日本雅马哈高层演奏弗朗克名曲及自创《送别变奏曲》。</li>
+                    <li><strong>双钢琴与重奏：</strong>2021.07 与导师张小羽博士于上音歌剧院共演双钢琴版《黄河颂》。</li>
+                    <li><strong>电台转播：</strong>2022.01 作为白玉兰国际音乐节冠军，受上海经典947电台直播演奏。</li>
+                </ul>
+            </div>
+
+            <div class="exp-card reveal">
+                <h3>教学经历 (Teaching)</h3>
+                <ul>
+                    <li><strong>独立音乐教师 (2020-至今)：</strong>首创线上线下结合授课模式，涵盖钢琴、即兴演奏、视唱练耳、乐理及和声学全科辅导。</li>
+                    <li><strong>艺考成果斐然：</strong>指导学生分别考入上海音乐学院（音教）、南京艺术学院（作曲）、广西艺术学院（全国第一）等顶尖学府。</li>
+                    <li><strong>成人零基础启蒙：</strong>擅长成人教学，曾长期指导上海交通大学教授等零基础学员。</li>
+                    <li><strong>机构主讲：</strong>2022.10 - 2024.06 于上海 UI Studio 担任唯一键盘教师，全面负责键盘专业课。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="awards" style="background-color: var(--surface-color);">
+        <h2 class="section-title reveal">Honors & Awards</h2>
+        <div class="awards-list reveal">
+            <div class="award-item"><span class="award-year">2023</span>第一届法国加布里埃尔·福雷国际音乐比赛最高奖：STAR GRAND PRIZE</div>
+            <div class="award-item"><span class="award-year">2023</span>上海音乐学院雅马哈奖学金 钢琴独奏组一等奖</div>
+            <div class="award-item"><span class="award-year">2023</span>上海音乐学院雅马哈奖学金 即兴演奏组二等奖</div>
+            <div class="award-item"><span class="award-year">2023</span>第七届KAWAI亚洲钢琴大赛上海赛区专业青年2组二等奖</div>
+            <div class="award-item"><span class="award-year">2022</span>第十九届星海杯全国钢琴比赛青年高校组优秀奖</div>
+            <div class="award-item"><span class="award-year">2022</span>上海音乐学院雅马哈奖学金 即兴演奏组二等奖</div>
+            <div class="award-item"><span class="award-year">2021</span>第三届上海白玉兰国际音乐节钢琴比赛全国总决赛 高校组一等奖（唯一冠军）</div>
+            <div class="award-item"><span class="award-year">2021</span>上海音乐学院雅马哈奖学金 即兴演奏组一等奖</div>
+            <div class="award-item"><span class="award-year">2021</span>第二届瑞士ISCART国际音乐比赛C组 一等奖和“ISCART”奖</div>
+            <div class="award-item"><span class="award-year">2021</span>第四届美国联邦钢琴公开赛上海赛区 高等院校组一等奖</div>
+            <div class="award-item"><span class="award-year">2021</span>第十届意大利马萨城国际音乐比赛E组二等奖</div>
+            <div class="award-item"><span class="award-year">2020</span>全球“云知音”网络公益钢琴大赛专业组 金奖</div>
+            <div class="award-item"><span class="award-year">2019</span>第二届京都国际钢琴公开赛福建赛区少年A组 金奖</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="contact-info reveal">
+            <h3 style="color: #fff; margin-bottom: 25px; font-size: var(--title-h3);">Contact & Booking</h3>
+            <p><span>Email:</span> username@example.com </p>
+            <p><span>Phone:</span> (+86) 123 4567 8901 </p>
+            <p style="margin-top: 40px; font-size: 0.9rem; color: #555;">&copy; 2024 Xiangwei Wang. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* ---------------------------------------------------
+           1. 汉堡菜单逻辑 (手机端)
+        --------------------------------------------------- */
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.getElementById('nav-links');
+        const navItems = document.querySelectorAll('.nav-links a');
+
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        // 点击任意链接后自动收起菜单
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        /* ---------------------------------------------------
+           2. 导航栏滚动变色与平滑跳转
+        --------------------------------------------------- */
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        /* ---------------------------------------------------
+           3. 动态相册轮播组件 (自动识别图片数量)
+        --------------------------------------------------- */
+        const carouselInner = document.getElementById('carouselInner');
+        const images = carouselInner.querySelectorAll('.carousel-item');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const indicatorsContainer = document.getElementById('carouselIndicators');
+
+        let currentIndex = 0;
+        const totalImages = images.length;
+
+        // 如果图片<=1张，隐藏控制按钮和指示器
+        if(totalImages <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            // 动态生成底部小圆点
+            for (let i = 0; i < totalImages; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                indicatorsContainer.appendChild(dot);
+            }
+        }
+
+        const dots = document.querySelectorAll('.dot');
+
+        function updateCarousel() {
+            // 滑动图片
+            carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // 更新圆点高亮
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateCarousel();
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalImages - 1;
+            updateCarousel();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex < totalImages - 1) ? currentIndex + 1 : 0;
+            updateCarousel();
+        });
+
+        // 可选：添加自动轮播功能 (每5秒切换一次)
+        setInterval(() => {
+            if(totalImages > 1) {
+                currentIndex = (currentIndex < totalImages - 1) ? currentIndex + 1 : 0;
+                updateCarousel();
+            }
+        }, 5000);
+
+        /* ---------------------------------------------------
+           4. 页面滚动浮现动画
+        --------------------------------------------------- */
+        const reveals = document.querySelectorAll('.reveal');
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        reveals.forEach(reveal => revealOnScroll.observe(reveal));
+    </script>
+</body>
+</html>
